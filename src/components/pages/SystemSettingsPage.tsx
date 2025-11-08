@@ -463,16 +463,6 @@ export default function SystemSettingsPage() {
         </div>
       )}
 
-      {/* Data Source Indicator */}
-      <Card className="bg-blue-50 border-blue-200" padding="sm">
-        <div className="flex items-center space-x-2 space-x-reverse text-blue-600">
-          <CheckCircle className="w-4 h-4" />
-          <span className="text-sm font-medium">
-            البيانات الوهمية محملة - {systemSettings.length} إعداد في {categories.length} فئات
-          </span>
-        </div>
-      </Card>
-
       {/* Actions Bar */}
       <div className="flex items-center justify-between">
         <div className="flex space-x-3 space-x-reverse">
@@ -663,8 +653,8 @@ export default function SystemSettingsPage() {
               <Database className="w-5 h-5 text-green-600" />
               <span className="font-medium text-green-800">قاعدة البيانات</span>
             </div>
-            <p className="text-sm text-green-700">البيانات الوهمية</p>
-            <p className="text-xs text-green-600">للتطوير</p>
+            <p className="text-sm text-green-700">Supabase PostgreSQL</p>
+            <p className="text-xs text-green-600">متصلة</p>
           </div>
 
           <div className="bg-purple-50 p-4 rounded-xl border border-purple-200">

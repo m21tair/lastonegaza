@@ -273,16 +273,6 @@ export default function AlertsManagementPage() {
         </div>
       )}
 
-      {/* Data Source Indicator */}
-      <Card className="bg-blue-50 border-blue-200" padding="sm">
-        <div className="flex items-center space-x-2 space-x-reverse text-blue-600">
-          <CheckCircle className="w-4 h-4" />
-          <span className="text-sm font-medium">
-            البيانات الوهمية محملة - {alerts.length} تنبيه ({unreadAlerts.length} غير مقروء)
-          </span>
-        </div>
-      </Card>
-
       {/* Actions Bar */}
       <div className="flex items-center justify-between">
         <div className="flex space-x-3 space-x-reverse">
@@ -510,10 +500,6 @@ export default function AlertsManagementPage() {
               <h3 className="text-lg font-semibold text-gray-900">
                 قائمة التنبيهات ({filteredAlerts.length})
               </h3>
-            </div>
-            <div className="flex items-center space-x-2 space-x-reverse text-blue-600">
-              <CheckCircle className="w-4 h-4" />
-              <span className="text-sm">البيانات الوهمية</span>
             </div>
           </div>
         </div>

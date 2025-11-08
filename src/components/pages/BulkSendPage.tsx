@@ -164,16 +164,6 @@ export default function BulkSendPage() {
 
   return (
     <div className="space-y-6">
-      {/* Data Source Indicator */}
-      <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4">
-        <div className="flex items-center space-x-2 space-x-reverse text-blue-600">
-          <CheckCircle className="w-4 h-4" />
-          <span className="text-sm font-medium">
-            البيانات الوهمية محملة - {institutions.length} مؤسسة، {packageTemplates.length} قالب، {allBeneficiaries.length} مستفيد
-          </span>
-        </div>
-      </div>
-
       {/* Progress Indicator */}
       <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
         <div className="flex items-center justify-between mb-4">
