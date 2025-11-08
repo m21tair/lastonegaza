@@ -1,11 +1,31 @@
-import { 
-  mockBeneficiaries, 
-  mockOrganizations, 
-  mockFamilies, 
-  mockPackages, 
-  mockTasks, 
-  mockAlerts, 
-  mockActivityLog, 
+import { supabase } from '../lib/supabaseClient';
+
+import {
+  beneficiariesService as realBeneficiariesService,
+  organizationsService as realOrganizationsService,
+  familiesService as realFamiliesService,
+  packagesService as realPackagesService,
+  packageTemplatesService as realPackageTemplatesService,
+  tasksService as realTasksService,
+  alertsService as realAlertsService,
+  activityLogService as realActivityLogService,
+  couriersService as realCouriersService,
+  rolesService as realRolesService,
+  systemUsersService as realSystemUsersService,
+  permissionsService as realPermissionsService,
+  statisticsService as realStatisticsService,
+  systemService as realSystemService,
+  reportsService as realReportsService
+} from './supabaseRealService';
+
+import {
+  mockBeneficiaries,
+  mockOrganizations,
+  mockFamilies,
+  mockPackages,
+  mockTasks,
+  mockAlerts,
+  mockActivityLog,
   mockCouriers,
   mockPackageTemplates,
   mockRoles,
@@ -26,23 +46,34 @@ import {
   type Permission
 } from '../data/mockData';
 
-const simulateNetworkDelay = (ms: number = 500) => 
+const USE_REAL_DATABASE = !!supabase;
+
+const simulateNetworkDelay = (ms: number = 500) =>
   new Promise(resolve => setTimeout(resolve, ms));
 
 export const beneficiariesService = {
   async getAll(): Promise<Beneficiary[]> {
+    if (USE_REAL_DATABASE) {
+      return realBeneficiariesService.getAll() as any;
+    }
     await simulateNetworkDelay();
     return [...mockBeneficiaries];
   },
 
   async getAllDetailed(): Promise<Beneficiary[]> {
+    if (USE_REAL_DATABASE) {
+      return realBeneficiariesService.getAllDetailed() as any;
+    }
     await simulateNetworkDelay();
     return [...mockBeneficiaries];
   },
 
   async search(searchTerm: string): Promise<Beneficiary[]> {
+    if (USE_REAL_DATABASE) {
+      return realBeneficiariesService.search(searchTerm) as any;
+    }
     await simulateNetworkDelay();
-    return mockBeneficiaries.filter(b => 
+    return mockBeneficiaries.filter(b =>
       b.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       b.nationalId.includes(searchTerm) ||
       b.phone.includes(searchTerm)
@@ -127,7 +158,7 @@ export const beneficiariesService = {
   }
 };
 
-export const organizationsService = {
+export const organizationsService = USE_REAL_DATABASE ? realOrganizationsService : {
   async getAll(): Promise<Organization[]> {
     await simulateNetworkDelay();
     return [...mockOrganizations];
