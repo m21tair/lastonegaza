@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabaseClient';
 import type { Database } from '../types/database';
+import { withRetry, handleApiError } from '../utils/apiHelpers';
 
 type Beneficiary = Database['public']['Tables']['beneficiaries']['Row'];
 type BeneficiaryInsert = Database['public']['Tables']['beneficiaries']['Insert'];
@@ -19,13 +20,18 @@ export const beneficiariesService = {
   async getAll(): Promise<Beneficiary[]> {
     if (!supabase) throw new Error('Supabase not initialized');
 
-    const { data, error } = await supabase
-      .from('beneficiaries')
-      .select('*')
-      .order('created_at', { ascending: false });
+    return withRetry(async () => {
+      const { data, error } = await supabase
+        .from('beneficiaries')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-    if (error) throw error;
-    return data || [];
+      if (error) {
+        const apiError = handleApiError(error);
+        throw new Error(apiError.message);
+      }
+      return data || [];
+    });
   },
 
   async getAllDetailed(): Promise<any[]> {

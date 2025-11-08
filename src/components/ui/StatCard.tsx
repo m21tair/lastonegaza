@@ -14,7 +14,7 @@ interface StatCardProps {
   className?: string;
 }
 
-export default function StatCard({
+const StatCard = React.memo(function StatCard({
   title,
   value,
   icon: Icon,
@@ -60,4 +60,6 @@ export default function StatCard({
       </div>
     </div>
   );
-}
+});
+
+export default StatCard;

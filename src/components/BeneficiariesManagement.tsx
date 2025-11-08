@@ -198,11 +198,11 @@ export default function BeneficiariesManagement({ initialTab = 'list' }: Benefic
                   <div>
                     <p className="text-sm font-medium text-gray-600 mb-1">مرفوض التوثيق</p>
                     <p className="text-3xl font-bold text-gray-900">
-                      {mockBeneficiaries.filter(b => b.identityStatus === 'verified').length}
+                      {mockBeneficiaries.filter(b => b.identityStatus === 'rejected').length}
                     </p>
                   </div>
-                  <div className="bg-purple-100 p-4 rounded-2xl">
-                    <Star className="w-8 h-8 text-purple-600" />
+                  <div className="bg-red-100 p-4 rounded-2xl">
+                    <AlertTriangle className="w-8 h-8 text-red-600" />
                   </div>
                 </div>
               </div>

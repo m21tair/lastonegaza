@@ -10,6 +10,7 @@ import OrganizationsDashboard from './components/OrganizationsDashboard';
 import FamiliesDashboard from './components/FamiliesDashboard';
 import { ErrorConsole } from './components/ErrorConsole';
 import { Bug } from 'lucide-react';
+import type { SystemUser } from './data/mockData';
 
 type PageType = 'landing' | 'admin' | 'organizations' | 'families';
 
@@ -68,9 +69,9 @@ function AppContent({
 }: AppContentProps) {
   const { loggedInUser, login, logout } = useAuth();
 
-  const handleLogin = (user: any) => {
+  const handleLogin = (user: SystemUser) => {
     login(user);
-    
+
     if (user.roleId === 'admin' || user.associatedType === null) {
       handleNavigateTo('admin');
     } else if (user.associatedType === 'organization') {
