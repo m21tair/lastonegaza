@@ -48,31 +48,16 @@ import {
 
 const USE_REAL_DATABASE = !!supabase;
 
-const simulateNetworkDelay = (ms: number = 500) =>
-  new Promise(resolve => setTimeout(resolve, ms));
-
-export const beneficiariesService = {
+export const beneficiariesService = USE_REAL_DATABASE ? realBeneficiariesService : {
   async getAll(): Promise<Beneficiary[]> {
-    if (USE_REAL_DATABASE) {
-      return realBeneficiariesService.getAll() as any;
-    }
-    await simulateNetworkDelay();
     return [...mockBeneficiaries];
   },
 
   async getAllDetailed(): Promise<Beneficiary[]> {
-    if (USE_REAL_DATABASE) {
-      return realBeneficiariesService.getAllDetailed() as any;
-    }
-    await simulateNetworkDelay();
     return [...mockBeneficiaries];
   },
 
   async search(searchTerm: string): Promise<Beneficiary[]> {
-    if (USE_REAL_DATABASE) {
-      return realBeneficiariesService.search(searchTerm) as any;
-    }
-    await simulateNetworkDelay();
     return mockBeneficiaries.filter(b =>
       b.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       b.nationalId.includes(searchTerm) ||
@@ -81,22 +66,18 @@ export const beneficiariesService = {
   },
 
   async getById(id: string): Promise<Beneficiary | null> {
-    await simulateNetworkDelay();
     return mockBeneficiaries.find(b => b.id === id) || null;
   },
 
   async getByOrganization(organizationId: string): Promise<Beneficiary[]> {
-    await simulateNetworkDelay();
     return mockBeneficiaries.filter(b => b.organizationId === organizationId);
   },
 
   async getByFamily(familyId: string): Promise<Beneficiary[]> {
-    await simulateNetworkDelay();
     return mockBeneficiaries.filter(b => b.familyId === familyId);
   },
 
   async create(beneficiary: any): Promise<Beneficiary> {
-    await simulateNetworkDelay();
     const newBeneficiary: Beneficiary = {
       id: `new-${Date.now()}`,
       name: beneficiary.name,
@@ -111,6 +92,9 @@ export const beneficiariesService = {
       organizationId: beneficiary.organizationId,
       familyId: beneficiary.familyId,
       relationToFamily: beneficiary.relationToFamily,
+      isHeadOfFamily: false,
+      childrenIds: [],
+      medicalConditions: [],
       profession: beneficiary.profession,
       maritalStatus: beneficiary.maritalStatus,
       economicLevel: beneficiary.economicLevel,
@@ -128,29 +112,27 @@ export const beneficiariesService = {
       createdBy: 'admin',
       updatedBy: 'admin'
     };
-    
+
     mockBeneficiaries.unshift(newBeneficiary);
     return newBeneficiary;
   },
 
   async update(id: string, updates: any): Promise<Beneficiary> {
-    await simulateNetworkDelay();
     const index = mockBeneficiaries.findIndex(b => b.id === id);
     if (index === -1) {
       throw new Error('المستفيد غير موجود');
     }
-    
+
     mockBeneficiaries[index] = {
       ...mockBeneficiaries[index],
       ...updates,
       updatedAt: new Date().toISOString()
     };
-    
+
     return mockBeneficiaries[index];
   },
 
   async delete(id: string): Promise<void> {
-    await simulateNetworkDelay();
     const index = mockBeneficiaries.findIndex(b => b.id === id);
     if (index !== -1) {
       mockBeneficiaries.splice(index, 1);
@@ -160,46 +142,38 @@ export const beneficiariesService = {
 
 export const organizationsService = USE_REAL_DATABASE ? realOrganizationsService : {
   async getAll(): Promise<Organization[]> {
-    await simulateNetworkDelay();
     return [...mockOrganizations];
   },
 
   async getActive(): Promise<Organization[]> {
-    await simulateNetworkDelay();
     return mockOrganizations.filter(org => org.status === 'active');
   },
 
   async getById(id: string): Promise<Organization | null> {
-    await simulateNetworkDelay();
     return mockOrganizations.find(org => org.id === id) || null;
   }
 };
 
-export const familiesService = {
+export const familiesService = USE_REAL_DATABASE ? realFamiliesService : {
   async getAll(): Promise<Family[]> {
-    await simulateNetworkDelay();
     return [...mockFamilies];
   },
 
   async getById(id: string): Promise<Family | null> {
-    await simulateNetworkDelay();
     return mockFamilies.find(f => f.id === id) || null;
   }
 };
 
-export const packagesService = {
+export const packagesService = USE_REAL_DATABASE ? realPackagesService : {
   async getAll(): Promise<PackageType[]> {
-    await simulateNetworkDelay();
     return [...mockPackages];
   },
 
   async getByBeneficiary(beneficiaryId: string): Promise<PackageType[]> {
-    await simulateNetworkDelay();
     return mockPackages.filter(p => p.beneficiaryId === beneficiaryId);
   },
 
   async create(packageData: any): Promise<PackageType> {
-    await simulateNetworkDelay();
     const newPackage: PackageType = {
       id: `pkg-${Date.now()}`,
       name: packageData.name,
@@ -215,25 +189,22 @@ export const packagesService = {
       deliveredAt: packageData.deliveredAt,
       expiryDate: packageData.expiryDate
     };
-    
+
     mockPackages.unshift(newPackage);
     return newPackage;
   }
 };
 
-export const packageTemplatesService = {
+export const packageTemplatesService = USE_REAL_DATABASE ? realPackageTemplatesService : {
   async getAll(): Promise<PackageTemplate[]> {
-    await simulateNetworkDelay();
     return [...mockPackageTemplates];
   },
 
   async getByOrganization(organizationId: string): Promise<PackageTemplate[]> {
-    await simulateNetworkDelay();
     return mockPackageTemplates.filter(t => t.organization_id === organizationId);
   },
 
   async createWithItems(template: any, items: any[]): Promise<PackageTemplate> {
-    await simulateNetworkDelay();
     const newTemplate: PackageTemplate = {
       id: `template-${Date.now()}`,
       name: template.name,
@@ -247,53 +218,47 @@ export const packageTemplatesService = {
       totalWeight: items.reduce((sum, item) => sum + (item.weight || 0), 0),
       estimatedCost: template.estimatedCost || 0
     };
-    
+
     mockPackageTemplates.unshift(newTemplate);
     return newTemplate;
   }
 };
 
-export const tasksService = {
+export const tasksService = USE_REAL_DATABASE ? realTasksService : {
   async getAll(): Promise<Task[]> {
-    await simulateNetworkDelay();
     return [...mockTasks];
   },
 
   async getByBeneficiary(beneficiaryId: string): Promise<Task[]> {
-    await simulateNetworkDelay();
     return mockTasks.filter(t => t.beneficiaryId === beneficiaryId);
   },
 
   async updateStatus(id: string, status: Task['status'], updates?: any): Promise<Task> {
-    await simulateNetworkDelay();
     const index = mockTasks.findIndex(t => t.id === id);
     if (index === -1) {
       throw new Error('المهمة غير موجودة');
     }
-    
+
     mockTasks[index] = {
       ...mockTasks[index],
       status,
       ...updates
     };
-    
+
     return mockTasks[index];
   }
 };
 
-export const alertsService = {
+export const alertsService = USE_REAL_DATABASE ? realAlertsService : {
   async getAll(): Promise<Alert[]> {
-    await simulateNetworkDelay();
     return [...mockAlerts];
   },
 
   async getUnread(): Promise<Alert[]> {
-    await simulateNetworkDelay();
     return mockAlerts.filter(a => !a.isRead);
   },
 
   async markAsRead(id: string): Promise<void> {
-    await simulateNetworkDelay();
     const alert = mockAlerts.find(a => a.id === id);
     if (alert) {
       alert.isRead = true;
@@ -301,31 +266,26 @@ export const alertsService = {
   }
 };
 
-export const activityLogService = {
+export const activityLogService = USE_REAL_DATABASE ? realActivityLogService : {
   async getAll(): Promise<ActivityLog[]> {
-    await simulateNetworkDelay();
     return [...mockActivityLog];
   },
 
   async getByBeneficiary(beneficiaryId: string): Promise<ActivityLog[]> {
-    await simulateNetworkDelay();
     return mockActivityLog.filter(a => a.beneficiaryId === beneficiaryId);
   }
 };
 
-export const couriersService = {
+export const couriersService = USE_REAL_DATABASE ? realCouriersService : {
   async getAll(): Promise<Courier[]> {
-    await simulateNetworkDelay();
     return [...mockCouriers];
   },
 
   async getAllWithPerformance(): Promise<Courier[]> {
-    await simulateNetworkDelay();
     return [...mockCouriers];
   },
 
   async updateLocation(courierId: string, location: any): Promise<any> {
-    await simulateNetworkDelay();
     const courier = mockCouriers.find(c => c.id === courierId);
     if (courier) {
       courier.currentLocation = { lat: location.latitude, lng: location.longitude };
@@ -334,35 +294,30 @@ export const couriersService = {
   }
 };
 
-export const rolesService = {
+export const rolesService = USE_REAL_DATABASE ? realRolesService : {
   async getAll(): Promise<Role[]> {
-    await simulateNetworkDelay();
     return [...mockRoles];
   }
 };
 
-export const systemUsersService = {
+export const systemUsersService = USE_REAL_DATABASE ? realSystemUsersService : {
   async getAll(): Promise<SystemUser[]> {
-    await simulateNetworkDelay();
     return [...mockSystemUsers];
   }
 };
 
-export const permissionsService = {
+export const permissionsService = USE_REAL_DATABASE ? realPermissionsService : {
   async getAll(): Promise<Permission[]> {
-    await simulateNetworkDelay();
     return [...mockPermissions];
   }
 };
 
-export const statisticsService = {
+export const statisticsService = USE_REAL_DATABASE ? realStatisticsService : {
   async getOverallStats(): Promise<any> {
-    await simulateNetworkDelay();
     return calculateStats();
   },
 
   async getGeographicStats(): Promise<any[]> {
-    await simulateNetworkDelay();
     return [
       { area_name: 'خان يونس', total_beneficiaries: 156, delivered_packages: 89, pending_packages: 23, success_rate: 79.5 },
       { area_name: 'غزة', total_beneficiaries: 234, delivered_packages: 187, pending_packages: 34, success_rate: 84.6 },
@@ -373,7 +328,6 @@ export const statisticsService = {
   },
 
   async generateComprehensiveReport(startDate?: string, endDate?: string): Promise<any> {
-    await simulateNetworkDelay();
     const stats = calculateStats();
     return {
       period: {
@@ -399,14 +353,13 @@ export const statisticsService = {
   }
 };
 
-export const systemService = {
+export const systemService = USE_REAL_DATABASE ? realSystemService : {
   async createAutomaticAlerts(): Promise<void> {
-    await simulateNetworkDelay();
+    return;
   },
 
   async calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): Promise<number> {
-    await simulateNetworkDelay();
-    const R = 6371; // نصف قطر الأرض بالكيلومتر
+    const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
     const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
@@ -417,7 +370,6 @@ export const systemService = {
   },
 
   async generateTrackingNumber(): Promise<string> {
-    await simulateNetworkDelay();
     const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
     const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
     return `TRK-${date}-${random}`;
@@ -426,103 +378,86 @@ export const systemService = {
 
 export const inventoryService = {
   async getByDistributionCenter(centerId: string): Promise<any[]> {
-    await simulateNetworkDelay();
     return [];
   },
 
   async getLowStock(): Promise<any[]> {
-    await simulateNetworkDelay();
     return [];
   }
 };
 
 export const categoriesService = {
   async getAllBeneficiaryCategories(): Promise<any[]> {
-    await simulateNetworkDelay();
     return [];
   }
 };
 
 export const notificationsService = {
   async send(notification: any): Promise<any> {
-    await simulateNetworkDelay();
     return { success: true };
   },
 
   async getByUser(userId: string): Promise<any[]> {
-    await simulateNetworkDelay();
     return [];
   }
 };
 
 export const feedbackService = {
   async create(feedback: any): Promise<any> {
-    await simulateNetworkDelay();
     return { success: true };
   },
 
   async getByCourier(courierId: string): Promise<any[]> {
-    await simulateNetworkDelay();
     return [];
   }
 };
 
 export const geographicService = {
   async getAllAreas(): Promise<any[]> {
-    await simulateNetworkDelay();
     return [];
   },
 
   async getByType(type: string): Promise<any[]> {
-    await simulateNetworkDelay();
     return [];
   }
 };
 
 export const distributionCentersService = {
   async getAll(): Promise<any[]> {
-    await simulateNetworkDelay();
     return [];
   },
 
   async getActive(): Promise<any[]> {
-    await simulateNetworkDelay();
     return [];
   }
 };
 
 export const settingsService = {
   async getSetting(category: string, key: string): Promise<any> {
-    await simulateNetworkDelay();
     return null;
   },
 
   async updateSetting(category: string, key: string, value: string): Promise<any> {
-    await simulateNetworkDelay();
     return { success: true };
   },
 
   async getByCategory(category: string): Promise<any[]> {
-    await simulateNetworkDelay();
     return [];
   }
 };
 
 export const emergencyContactsService = {
   async getByBeneficiary(beneficiaryId: string): Promise<any[]> {
-    await simulateNetworkDelay();
     return [];
   },
 
   async create(contact: any): Promise<any> {
-    await simulateNetworkDelay();
     return { success: true };
   }
 };
 
-export const reportsService = {
+export const reportsService = USE_REAL_DATABASE ? realReportsService : {
   async generateReport(type: string, parameters: any = {}): Promise<any> {
-    await simulateNetworkDelay();
     return await statisticsService.generateComprehensiveReport(
       parameters.start_date,
       parameters.end_date
