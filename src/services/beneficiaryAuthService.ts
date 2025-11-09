@@ -343,5 +343,58 @@ export const beneficiaryAuthService = {
       return '+970' + cleaned;
     }
     return phone;
+  },
+
+  async publicSearch(nationalId: string): Promise<{
+    found: boolean;
+    beneficiary?: {
+      name: string;
+      national_id: string;
+      status: string;
+    };
+    packages?: Array<{
+      id: string;
+      name: string;
+      status: string;
+      scheduled_delivery_date: string | null;
+      tracking_number: string | null;
+    }>;
+    message?: string;
+  }> {
+    if (!supabase) throw new Error('Supabase not initialized');
+
+    const beneficiary = await this.searchByNationalId(nationalId);
+
+    if (!beneficiary) {
+      return {
+        found: false,
+        message: 'رقم الهوية غير موجود في قاعدة البيانات'
+      };
+    }
+
+    const { data: packages } = await supabase
+      .from('packages')
+      .select('id, name, status, scheduled_delivery_date, tracking_number')
+      .eq('beneficiary_id', beneficiary.id)
+      .order('created_at', { ascending: false });
+
+    await this.logActivity(
+      `بحث عام عن مستفيد برقم هوية: ${nationalId}`,
+      'نظام عام',
+      'public',
+      'review',
+      beneficiary.id,
+      'بحث عام من الصفحة الرئيسية'
+    );
+
+    return {
+      found: true,
+      beneficiary: {
+        name: beneficiary.name,
+        national_id: beneficiary.national_id,
+        status: beneficiary.status
+      },
+      packages: packages || []
+    };
   }
 };
