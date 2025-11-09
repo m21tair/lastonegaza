@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
-import { Shield, Search, Package, CheckCircle, Clock, AlertCircle, MessageCircle, Phone, ArrowLeft, HelpCircle, Users, Building2, Heart } from 'lucide-react';
+import { Shield, Search, Package, CheckCircle, Clock, AlertCircle, MessageCircle, Phone, ArrowLeft, HelpCircle, Users, Building2, Heart, LogIn } from 'lucide-react';
 import { beneficiaryAuthService } from '../services/beneficiaryAuthService';
 import { Button, Input, Card } from './ui';
+import BeneficiaryPortalModal from './BeneficiaryPortalModal';
+import type { Database } from '../types/database';
+
+type Beneficiary = Database['public']['Tables']['beneficiaries']['Row'];
 
 interface LandingPageProps {
   onNavigateTo: (page: string) => void;
@@ -28,8 +32,10 @@ export default function LandingPage({ onNavigateTo }: LandingPageProps) {
   const [nationalId, setNationalId] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
+  const [fullBeneficiary, setFullBeneficiary] = useState<Beneficiary | null>(null);
   const [error, setError] = useState('');
   const [showAdminMenu, setShowAdminMenu] = useState(false);
+  const [showPortalModal, setShowPortalModal] = useState(false);
 
   const handleSearch = async () => {
     if (!beneficiaryAuthService.validateNationalId(nationalId)) {
@@ -44,11 +50,18 @@ export default function LandingPage({ onNavigateTo }: LandingPageProps) {
     try {
       const result = await beneficiaryAuthService.publicSearch(nationalId);
       setSearchResult(result);
+
+      const beneficiary = await beneficiaryAuthService.searchByNationalId(nationalId);
+      setFullBeneficiary(beneficiary);
     } catch (err: any) {
       setError(err.message || 'حدث خطأ أثناء البحث');
     } finally {
       setIsSearching(false);
     }
+  };
+
+  const handleOpenPortalModal = () => {
+    setShowPortalModal(true);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -327,13 +340,23 @@ export default function LandingPage({ onNavigateTo }: LandingPageProps) {
                     <p className="text-sm text-gray-600 mb-4">
                       للوصول إلى معلومات أكثر تفصيلاً وإدارة حسابك:
                     </p>
-                    <Button
-                      onClick={() => onNavigateTo('beneficiary')}
-                      className="w-full"
-                    >
-                      تسجيل الدخول إلى حسابي
-                      <ArrowLeft className="w-4 h-4 mr-2" />
-                    </Button>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Button
+                        onClick={handleOpenPortalModal}
+                        className="flex-1"
+                      >
+                        <LogIn className="w-5 h-5 ml-2" />
+                        تسجيل الدخول إلى حسابي
+                      </Button>
+                      <Button
+                        onClick={() => onNavigateTo('beneficiary')}
+                        variant="outline"
+                        className="flex-1"
+                      >
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        فتح في صفحة كاملة
+                      </Button>
+                    </div>
                   </div>
                 </Card>
               </>
@@ -464,6 +487,13 @@ export default function LandingPage({ onNavigateTo }: LandingPageProps) {
           </div>
         </div>
       </footer>
+
+      <BeneficiaryPortalModal
+        isOpen={showPortalModal}
+        onClose={() => setShowPortalModal(false)}
+        nationalId={nationalId}
+        initialBeneficiary={fullBeneficiary}
+      />
     </div>
   );
 }
