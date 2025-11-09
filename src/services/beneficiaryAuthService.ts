@@ -289,7 +289,8 @@ export const beneficiaryAuthService = {
     role: string,
     type: 'create' | 'verify' | 'approve' | 'update' | 'deliver' | 'review',
     beneficiaryId?: string,
-    details?: string
+    details?: string,
+    source: 'admin' | 'beneficiary' | 'system' | 'public' = 'beneficiary'
   ): Promise<void> {
     if (!supabase) throw new Error('Supabase not initialized');
 
@@ -301,7 +302,8 @@ export const beneficiaryAuthService = {
         role,
         type,
         beneficiary_id: beneficiaryId,
-        details
+        details,
+        source
       });
 
     if (error) throw error;
@@ -384,7 +386,8 @@ export const beneficiaryAuthService = {
       'public',
       'review',
       beneficiary.id,
-      'بحث عام من الصفحة الرئيسية'
+      'بحث عام من الصفحة الرئيسية',
+      'public'
     );
 
     return {
