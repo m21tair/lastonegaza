@@ -28,6 +28,7 @@ import SystemSettingsPage from './pages/SystemSettingsPage';
 import BackupManagementPage from './pages/BackupManagementPage';
 import AlertsManagementPage from './pages/AlertsManagementPage';
 import MessagesSettingsPage from './pages/MessagesSettingsPage';
+import BeneficiaryPortalSettings from './pages/BeneficiaryPortalSettings';
 
 interface NavItem {
   id: string;
@@ -131,6 +132,7 @@ export default function AdminDashboard({ activeTab, setActiveTab }: AdminDashboa
       icon: Settings,
       children: [
         { id: 'permissions', name: 'إدارة الصلاحيات', icon: Shield },
+        { id: 'beneficiary-portal', name: 'بوابة المستفيدين', icon: Users },
         { id: 'messages', name: 'إعدادات الرسائل', icon: MessageSquare },
         { id: 'system', name: 'إعدادات النظام', icon: Settings },
         { id: 'backup', name: 'النسخ الاحتياطي', icon: Database },
@@ -149,6 +151,7 @@ export default function AdminDashboard({ activeTab, setActiveTab }: AdminDashboa
 
   const settingsItems = [
     { id: 'permissions', name: 'إدارة الصلاحيات', icon: Shield, description: 'إدارة أدوار المستخدمين وصلاحياتهم' },
+    { id: 'beneficiary-portal', name: 'بوابة المستفيدين', icon: Users, description: 'إعدادات وتفعيل بوابة المستفيدين' },
     { id: 'messages', name: 'إعدادات الرسائل', icon: MessageSquare, description: 'إدارة قوالب الرسائل والتنبيهات' },
     { id: 'system', name: 'إعدادات النظام', icon: Settings, description: 'الإعدادات العامة للنظام' },
     { id: 'backup', name: 'النسخ الاحتياطي', icon: Database, description: 'إدارة النسخ الاحتياطية للبيانات' },
@@ -966,6 +969,10 @@ export default function AdminDashboard({ activeTab, setActiveTab }: AdminDashboa
           <SystemSettingsPage />
         </div>
       );
+    }
+
+    if (activeTab === 'beneficiary-portal') {
+      return <BeneficiaryPortalSettings />;
     }
 
     if (activeTab === 'backup') {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield, Building2, Users, MapPin, Package, Truck, BarChart3, Bell, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Shield, Building2, Users, MapPin, Package, Truck, BarChart3, Bell, ArrowRight, ArrowLeft, Search } from 'lucide-react';
 
 interface LandingPageProps {
   onNavigateTo: (page: string) => void;
@@ -21,6 +21,13 @@ export default function LandingPage({ onNavigateTo }: LandingPageProps) {
                 <p className="text-xs text-gray-600">نظام إدارة التوزيع الإنساني</p>
               </div>
             </div>
+            <button
+              onClick={() => onNavigateTo('beneficiary')}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+            >
+              <Search className="w-4 h-4" />
+              بوابة المستفيدين
+            </button>
           </div>
         </div>
       </header>

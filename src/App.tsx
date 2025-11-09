@@ -8,11 +8,12 @@ import LandingPage from './components/LandingPage';
 import AdminDashboard from './components/AdminDashboard';
 import OrganizationsDashboard from './components/OrganizationsDashboard';
 import FamiliesDashboard from './components/FamiliesDashboard';
+import BeneficiaryPortal from './components/BeneficiaryPortal';
 import { ErrorConsole } from './components/ErrorConsole';
 import { Bug } from 'lucide-react';
 import type { SystemUser } from './data/mockData';
 
-type PageType = 'landing' | 'admin' | 'organizations' | 'families';
+type PageType = 'landing' | 'admin' | 'organizations' | 'families' | 'beneficiary';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('landing');
@@ -122,7 +123,12 @@ function AppContent({
           <FamiliesDashboard onNavigateBack={handleNavigateBack} />
         </ErrorBoundary>
       )}
-      
+      {currentPage === 'beneficiary' && (
+        <ErrorBoundary componentName="BeneficiaryPortal">
+          <BeneficiaryPortal onBack={handleNavigateBack} />
+        </ErrorBoundary>
+      )}
+
       {process.env.NODE_ENV === 'development' && (
         <>
           <button
